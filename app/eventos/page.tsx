@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Plus, Calendar, MapPin, Clock, Users, Loader2 } from "lucide-react"
@@ -17,16 +18,16 @@ const formatearFecha = (fechaStr: string) => {
 
 // Función para determinar el color del badge según el tipo de evento
 const getTipoColor = (tipo: string) => {
-  switch (tipo.toLowerCase()) {
-    case "limpieza":
+  switch (tipo) {
+    case "Limpieza":
       return "bg-green-500 hover:bg-green-600"
-    case "taller":
+    case "Taller":
       return "bg-blue-500 hover:bg-blue-600"
-    case "charla":
+    case "Charla":
       return "bg-purple-500 hover:bg-purple-600"
-    case "monitoreo":
+    case "Monitoreo":
       return "bg-amber-500 hover:bg-amber-600"
-    case "festival":
+    case "Festival":
       return "bg-pink-500 hover:bg-pink-600"
     default:
       return "bg-gray-500 hover:bg-gray-600"
