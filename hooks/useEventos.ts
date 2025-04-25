@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import axios from "axios";
 
 interface Evento {
   id: number;
@@ -24,18 +25,13 @@ export const useEventos = () => {
       setError(null);
 
       try {
-        const response = await fetch(
+        const response = await axios.get(
           "https://gray-gnat-361867.hostingersite.com/api-rest/eventos/listar.php"
         );
 
-        if (!response.ok) {
-          throw new Error("Error al obtener los eventos");
-        }
-
-        const data = await response.json();
-        setEventos(data);
+        setEventos(response.data);
       } catch (err: any) {
-        setError(err.message || "Ocurrió un error inesperado");
+        setError(err.response?.data?.message || err.message || "Ocurrió un error inesperado");
       } finally {
         setIsLoading(false);
       }
