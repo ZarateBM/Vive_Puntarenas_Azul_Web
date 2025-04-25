@@ -1,72 +1,9 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Plus, Calendar, MapPin, Clock, Users } from "lucide-react"
+import { Plus, Calendar, MapPin, Clock, Users, Loader2 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-
-// Datos de muestra para eventos
-const eventosMuestra = [
-  {
-    id: 1,
-    titulo: "Limpieza de Playa Doña Ana",
-    fecha: "2023-06-15",
-    hora: "08:00 - 12:00",
-    lugar: "Playa Doña Ana, Puntarenas",
-    descripcion:
-      "Únete a nuestra jornada de limpieza en una de las playas más hermosas de Puntarenas. Juntos podemos hacer la diferencia.",
-    tipo: "Limpieza",
-    imagen: "/placeholder.svg?height=300&width=500",
-    participantes: 25,
-  },
-  {
-    id: 2,
-    titulo: "Taller de Reciclaje Creativo",
-    fecha: "2023-06-22",
-    hora: "14:00 - 16:00",
-    lugar: "Centro Cultural de Puntarenas",
-    descripcion:
-      "Aprende a transformar residuos plásticos en objetos útiles y decorativos. Taller gratuito con cupo limitado.",
-    tipo: "Taller",
-    imagen: "/placeholder.svg?height=300&width=500",
-    participantes: 15,
-  },
-  {
-    id: 3,
-    titulo: "Charla: Impacto del Cambio Climático en los Océanos",
-    fecha: "2023-06-28",
-    hora: "18:30 - 20:00",
-    lugar: "Universidad de Costa Rica, Sede del Pacífico",
-    descripcion:
-      "Conferencia impartida por expertos en oceanografía sobre los efectos del cambio climático en los ecosistemas marinos.",
-    tipo: "Charla",
-    imagen: "/placeholder.svg?height=300&width=500",
-    participantes: 50,
-  },
-  {
-    id: 4,
-    titulo: "Monitoreo de Tortugas Marinas",
-    fecha: "2023-07-05",
-    hora: "19:00 - 22:00",
-    lugar: "Playa Tárcoles",
-    descripcion:
-      "Actividad de monitoreo nocturno de tortugas marinas durante la temporada de anidación. Se requiere inscripción previa.",
-    tipo: "Monitoreo",
-    imagen: "/placeholder.svg?height=300&width=500",
-    participantes: 10,
-  },
-  {
-    id: 5,
-    titulo: "Festival del Mar",
-    fecha: "2023-07-15",
-    hora: "10:00 - 18:00",
-    lugar: "Paseo de los Turistas, Puntarenas",
-    descripcion:
-      "Festival familiar con actividades educativas, música, arte y gastronomía local. Todo enfocado en la conservación marina.",
-    tipo: "Festival",
-    imagen: "/placeholder.svg?height=300&width=500",
-    participantes: 200,
-  },
-]
+import { useEventos } from "@/hooks/useEventos";
 
 // Función para formatear la fecha
 const formatearFecha = (fechaStr: string) => {
@@ -97,6 +34,24 @@ const getTipoColor = (tipo: string) => {
 }
 
 export default function EventosPage() {
+  const { eventos, isLoading, error } = useEventos();
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader2 /> {/* Muestra un spinner mientras se cargan los datos */}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center text-red-500">
+        <p>Error: {error}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
       <div className="text-center mb-12">
@@ -128,7 +83,7 @@ export default function EventosPage() {
 
       {/* Lista de eventos */}
       <div className="space-y-6">
-        {eventosMuestra.map((evento) => (
+        {eventos.map((evento) => (
           <Card key={evento.id} className="overflow-hidden">
             <div className="flex flex-col md:flex-row">
               <div className="md:w-1/3">
@@ -211,5 +166,5 @@ export default function EventosPage() {
         </nav>
       </div>
     </div>
-  )
+  );
 }
