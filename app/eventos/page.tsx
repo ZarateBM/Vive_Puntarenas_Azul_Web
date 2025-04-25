@@ -1,0 +1,215 @@
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Plus, Calendar, MapPin, Clock, Users } from "lucide-react"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+
+// Datos de muestra para eventos
+const eventosMuestra = [
+  {
+    id: 1,
+    titulo: "Limpieza de Playa Doña Ana",
+    fecha: "2023-06-15",
+    hora: "08:00 - 12:00",
+    lugar: "Playa Doña Ana, Puntarenas",
+    descripcion:
+      "Únete a nuestra jornada de limpieza en una de las playas más hermosas de Puntarenas. Juntos podemos hacer la diferencia.",
+    tipo: "Limpieza",
+    imagen: "/placeholder.svg?height=300&width=500",
+    participantes: 25,
+  },
+  {
+    id: 2,
+    titulo: "Taller de Reciclaje Creativo",
+    fecha: "2023-06-22",
+    hora: "14:00 - 16:00",
+    lugar: "Centro Cultural de Puntarenas",
+    descripcion:
+      "Aprende a transformar residuos plásticos en objetos útiles y decorativos. Taller gratuito con cupo limitado.",
+    tipo: "Taller",
+    imagen: "/placeholder.svg?height=300&width=500",
+    participantes: 15,
+  },
+  {
+    id: 3,
+    titulo: "Charla: Impacto del Cambio Climático en los Océanos",
+    fecha: "2023-06-28",
+    hora: "18:30 - 20:00",
+    lugar: "Universidad de Costa Rica, Sede del Pacífico",
+    descripcion:
+      "Conferencia impartida por expertos en oceanografía sobre los efectos del cambio climático en los ecosistemas marinos.",
+    tipo: "Charla",
+    imagen: "/placeholder.svg?height=300&width=500",
+    participantes: 50,
+  },
+  {
+    id: 4,
+    titulo: "Monitoreo de Tortugas Marinas",
+    fecha: "2023-07-05",
+    hora: "19:00 - 22:00",
+    lugar: "Playa Tárcoles",
+    descripcion:
+      "Actividad de monitoreo nocturno de tortugas marinas durante la temporada de anidación. Se requiere inscripción previa.",
+    tipo: "Monitoreo",
+    imagen: "/placeholder.svg?height=300&width=500",
+    participantes: 10,
+  },
+  {
+    id: 5,
+    titulo: "Festival del Mar",
+    fecha: "2023-07-15",
+    hora: "10:00 - 18:00",
+    lugar: "Paseo de los Turistas, Puntarenas",
+    descripcion:
+      "Festival familiar con actividades educativas, música, arte y gastronomía local. Todo enfocado en la conservación marina.",
+    tipo: "Festival",
+    imagen: "/placeholder.svg?height=300&width=500",
+    participantes: 200,
+  },
+]
+
+// Función para formatear la fecha
+const formatearFecha = (fechaStr: string) => {
+  const fecha = new Date(fechaStr)
+  return fecha.toLocaleDateString("es-CR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  })
+}
+
+// Función para determinar el color del badge según el tipo de evento
+const getTipoColor = (tipo: string) => {
+  switch (tipo.toLowerCase()) {
+    case "limpieza":
+      return "bg-green-500 hover:bg-green-600"
+    case "taller":
+      return "bg-blue-500 hover:bg-blue-600"
+    case "charla":
+      return "bg-purple-500 hover:bg-purple-600"
+    case "monitoreo":
+      return "bg-amber-500 hover:bg-amber-600"
+    case "festival":
+      return "bg-pink-500 hover:bg-pink-600"
+    default:
+      return "bg-gray-500 hover:bg-gray-600"
+  }
+}
+
+export default function EventosPage() {
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold mb-4">Calendario de Actividades</h1>
+        <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+          Participa en nuestras actividades de conservación, educación y voluntariado. Juntos podemos hacer la
+          diferencia.
+        </p>
+      </div>
+
+      {/* Botón de agregar evento y filtros */}
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" className="border-cyan-600 text-cyan-600 hover:bg-cyan-50">
+            Todos
+          </Button>
+          <Button variant="outline">Limpieza</Button>
+          <Button variant="outline">Taller</Button>
+          <Button variant="outline">Charla</Button>
+          <Button variant="outline">Monitoreo</Button>
+          <Button variant="outline">Festival</Button>
+        </div>
+        <Button asChild className="bg-cyan-600 hover:bg-cyan-700 w-full sm:w-auto">
+          <Link href="/eventos/nuevo">
+            <Plus className="mr-2 h-4 w-4" /> Agregar Evento
+          </Link>
+        </Button>
+      </div>
+
+      {/* Lista de eventos */}
+      <div className="space-y-6">
+        {eventosMuestra.map((evento) => (
+          <Card key={evento.id} className="overflow-hidden">
+            <div className="flex flex-col md:flex-row">
+              <div className="md:w-1/3">
+                <img
+                  src={evento.imagen || "/placeholder.svg"}
+                  alt={evento.titulo}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="md:w-2/3 flex flex-col">
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle>{evento.titulo}</CardTitle>
+                      <CardDescription className="mt-1">
+                        <span className="flex items-center text-gray-500">
+                          <Calendar className="h-4 w-4 mr-1" />
+                          {formatearFecha(evento.fecha)}
+                        </span>
+                      </CardDescription>
+                    </div>
+                    <Badge className={getTipoColor(evento.tipo)}>{evento.tipo}</Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                  <p className="text-gray-600 mb-4">{evento.descripcion}</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                    <div className="flex items-center text-gray-600">
+                      <Clock className="h-4 w-4 mr-2 text-cyan-600" />
+                      <span>{evento.hora}</span>
+                    </div>
+                    <div className="flex items-center text-gray-600">
+                      <MapPin className="h-4 w-4 mr-2 text-cyan-600" />
+                      <span>{evento.lugar}</span>
+                    </div>
+                    <div className="flex items-center text-gray-600">
+                      <Users className="h-4 w-4 mr-2 text-cyan-600" />
+                      <span>{evento.participantes} participantes</span>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button asChild className="bg-cyan-600 hover:bg-cyan-700">
+                    <Link href={`/eventos/${evento.id}`}>Ver Detalles</Link>
+                  </Button>
+                </CardFooter>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      {/* Paginación */}
+      <div className="mt-12 flex justify-center">
+        <nav className="inline-flex rounded-md shadow">
+          <a
+            href="#"
+            className="px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+          >
+            Anterior
+          </a>
+          <a
+            href="#"
+            className="px-4 py-2 border-t border-b border-gray-300 bg-white text-sm font-medium text-cyan-600 hover:bg-cyan-50"
+          >
+            1
+          </a>
+          <a
+            href="#"
+            className="px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+          >
+            2
+          </a>
+          <a
+            href="#"
+            className="px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+          >
+            Siguiente
+          </a>
+        </nav>
+      </div>
+    </div>
+  )
+}
