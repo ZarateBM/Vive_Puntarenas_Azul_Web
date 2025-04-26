@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import { useCrearEvento } from "@/hooks/use-createEventos"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -12,7 +13,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Upload, Save, ArrowLeft } from "lucide-react"
 
 export default function NuevoEventoPage() {
-  const router = useRouter()
+  const router = useRouter();
+  const {isSubmitting, error, crearEvento} = useCrearEvento();
   const [formData, setFormData] = useState({
     titulo: "",
     fecha: "",
@@ -33,12 +35,17 @@ export default function NuevoEventoPage() {
     setFormData((prev) => ({ ...prev, tipo: value }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Aquí iría la lógica para guardar el nuevo evento
-    console.log("Nuevo evento:", formData)
-    alert("Evento guardado correctamente")
-    router.push("/eventos")
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      await crearEvento(formData);
+      alert("evento creado"); 
+      router.push("/eventos");
+    } catch (error) {
+      alert(error || "Ocurrió un error");
+    }
+    
   }
 
   return (
@@ -195,7 +202,7 @@ export default function NuevoEventoPage() {
             Cancelar
           </Button>
           <Button type="submit" className="bg-cyan-600 hover:bg-cyan-700" onClick={handleSubmit}>
-            <Save className="mr-2 h-4 w-4" /> Guardar Evento
+            <Save  className="mr-2 h-4 w-4" /> {isSubmitting ? "guardando" : "guardar evento"}
           </Button>
         </CardFooter>
       </Card>
