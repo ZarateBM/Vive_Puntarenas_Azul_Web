@@ -9,8 +9,7 @@ interface Evento {
   hora: string;
   lugar: string;
   descripcion: string;
-  tipo: string;
-  imagen: string;
+  categoria: string;
   participantes: number;
 }
 

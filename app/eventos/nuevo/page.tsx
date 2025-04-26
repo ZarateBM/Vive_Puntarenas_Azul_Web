@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useCrearEvento } from "@/hooks/use-createEventos"
+import { useCrearEvento } from "@/hooks/useCreateEventos"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -18,13 +18,16 @@ export default function NuevoEventoPage() {
   const [formData, setFormData] = useState({
     titulo: "",
     fecha: "",
-    horaInicio: "",
-    horaFin: "",
+    hora_inicio: "",
+    hora_fin: "",
     lugar: "",
     descripcion: "",
-    tipo: "",
-    participantesMax: "",
+    categoria: "",
+    participantes: "",
   })
+
+  const [file, setFile] = useState<File | null>(null);
+  const [dragOver, setDragOver] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -32,14 +35,40 @@ export default function NuevoEventoPage() {
   }
 
   const handleSelectChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, tipo: value }))
+    setFormData((prev) => ({ ...prev, categoria: value }))
+  }
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0]);
+    }
+  }
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragOver(true);
+  }
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragOver(false);
+  }
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragOver(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0];
+      if (file && (file.type === "image/png" || file.type === "image/jpeg" || file.type === "image/jpg")) {
+        setFile(file);
+      } else {
+        alert("Por favor, selecciona una imagen válida (PNG, JPG o JPEG).");
+      }
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
-      await crearEvento(formData);
+      await crearEvento(formData, file as File);
       alert("evento creado"); 
       router.push("/eventos");
     } catch (error) {
@@ -82,18 +111,24 @@ export default function NuevoEventoPage() {
                 <label htmlFor="fecha" className="text-sm font-medium">
                   Fecha <span className="text-red-500">*</span>
                 </label>
-                <Input id="fecha" name="fecha" type="date" value={formData.fecha} onChange={handleChange} required />
+                <Input
+                  id="fecha"
+                  name="fecha"
+                  type="date"
+                  value={formData.fecha}
+                  onChange={handleChange}
+                  required
+              />
               </div>
-
               <div className="space-y-2">
                 <label htmlFor="horaInicio" className="text-sm font-medium">
                   Hora de Inicio <span className="text-red-500">*</span>
                 </label>
                 <Input
-                  id="horaInicio"
-                  name="horaInicio"
+                  id="hora_inicio"
+                  name="hora_inicio"
                   type="time"
-                  value={formData.horaInicio}
+                  value={formData.hora_inicio}
                   onChange={handleChange}
                   required
                 />
@@ -104,10 +139,10 @@ export default function NuevoEventoPage() {
                   Hora de Finalización <span className="text-red-500">*</span>
                 </label>
                 <Input
-                  id="horaFin"
-                  name="horaFin"
+                  id="hora_fin"
+                  name="hora_fin"
                   type="time"
-                  value={formData.horaFin}
+                  value={formData.hora_fin}
                   onChange={handleChange}
                   required
                 />
@@ -130,10 +165,10 @@ export default function NuevoEventoPage() {
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="tipo" className="text-sm font-medium">
+                <label htmlFor="categoria" className="text-sm font-medium">
                   Tipo de Evento <span className="text-red-500">*</span>
                 </label>
-                <Select value={formData.tipo} onValueChange={handleSelectChange}>
+                <Select value={formData.categoria} onValueChange={handleSelectChange}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecciona un tipo" />
                   </SelectTrigger>
@@ -170,11 +205,11 @@ export default function NuevoEventoPage() {
                   Número Máximo de Participantes
                 </label>
                 <Input
-                  id="participantesMax"
-                  name="participantesMax"
+                  id="participantes"
+                  name="participantes"
                   type="number"
                   min="1"
-                  value={formData.participantesMax}
+                  value={formData.participantes}
                   onChange={handleChange}
                   placeholder="Ej: 30 (Dejar en blanco si no hay límite)"
                 />
@@ -183,16 +218,31 @@ export default function NuevoEventoPage() {
 
             <div className="space-y-2">
               <label className="text-sm font-medium">Imagen del Evento</label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+              <div className=
+              {`border-2 border-dashed rounded-lg p-6 text-center ${dragOver ? "border-cyan-600" : "border-gray-300"}
+              ${file ? "bg-gray-100" : "bg-white"} transition duration-200 ease-in-out`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onClick={() => document.getElementById("fileInput")?.click()}
+              >
                 <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
                 <p className="text-sm text-gray-500 mb-2">
                   Arrastra y suelta una imagen aquí, o haz clic para seleccionar
                 </p>
                 <p className="text-xs text-gray-400">PNG, JPG o JPEG (máx. 5MB)</p>
-                <input type="file" className="hidden" accept="image/png, image/jpeg, image/jpg" />
-                <Button type="button" variant="outline" size="sm" className="mt-4">
-                  Seleccionar Archivo
-                </Button>
+                <input 
+                  id="fileInput"
+                  type="file" 
+                  accept="image/png, image/jpeg, image/jpg" 
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+                {file && (
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-700">Archivo seleccionado: {file.name}</p>
+                  </div>
+                )}
               </div>
             </div>
           </form>

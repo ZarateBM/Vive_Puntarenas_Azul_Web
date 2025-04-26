@@ -4,26 +4,36 @@ import { useState } from "react";
 interface crearEventoData {
     titulo: string;
     fecha: string;
-    horaInicio: string;
-    horaFin: string;
+    hora_inicio: string;
+    hora_fin: string;
+    categoria: string;
     lugar: string;
     descripcion: string;
     tipo: string;
-    participantesMax: string;
-    imagen: File; 
+    participantes: string;
 }
 
 export const useCrearEvento = () => { 
     const [isSubmitting, setIsSubmitting] = useState(false); 
     const [error, setError] = useState <string | null> (null); 
 
-    const crearEvento = async(data:crearEventoData) => {
+    const crearEvento = async(data:crearEventoData, file:File) => {
+
+
         setIsSubmitting(true); 
         setError(null); 
         try {
+            const formData = new FormData();
+            
+            Object.entries(data).forEach(([key, value]) => {
+                formData.append(key, value);
+            });
+
+            formData.append("imagen", file);
+
             const response = await axios.post(
                 "https://gray-gnat-361867.hostingersite.com/api-rest/eventos/crear.php", 
-                data, 
+                formData, 
                 {headers: {
                     "Content-Type":"multipart/form-data",
                 },
@@ -37,7 +47,7 @@ export const useCrearEvento = () => {
                 setError(error.message || "Ocurrió un error al crear el evento"); 
             }
             else{
-                setError("Ocurrió un error inseperado al crear el evento"); 
+                setError("Ocurrió un error inesperado al crear el evento"); 
             }
 
         } finally {
